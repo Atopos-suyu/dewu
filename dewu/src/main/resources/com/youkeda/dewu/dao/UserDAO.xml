@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youkeda.dewu.dao.UserDAO">
+    <!--名为userResultMap的结果映射，用于将数据库查询结果映射到Java对象com.youkeda.dewu.dataobject.UserDO中的属性-->
+    <resultMap id="userResultMap" type="com.youkeda.dewu.dataobject.UserDO">
+        <id column="id" property="id"/>
+        <result column="user_name" property="userName"/>
+        <result column="pwd" property="pwd"/>
+        <result column="nick_name" property="nickName"/>
+        <result column="avatar" property="avatar"/>
+        <result column="gmt_created" property="gmtCreated"/>
+        <result column="gmt_modified" property="gmtModified"/>
+    </resultMap>
+    <!--column属性指定了数据库查询结果的列名，而property属性指定了要映射到Java对象的属性名-->
+    <!--第三个属性表示要使用自动生成的主键，第四个属性指定了生成的主键要映射回Java对象的id属性-->
+    <insert id="batchAdd" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user (user_name, pwd, nick_name,avatar,gmt_created,gmt_modified)
+        VALUES
+        <foreach collection="list" item="it" index="index" separator=",">
+            (#{it.userName}, #{it.pwd}, #{it.nickName}, #{it.avatar},now(),now())
+        </foreach>
+    </insert>
+
+
+    <insert id="add" parameterType="com.youkeda.dewu.dataobject.UserDO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user (user_name, pwd, nick_name,avatar,gmt_created,gmt_modified)
+        VALUES(#{userName}, #{pwd}, #{nickName}, #{avatar},now(),now())
+    </insert>
+
+    <update id="update" parameterType="com.youkeda.dewu.dataobject.UserDO">
+        update user
+        <set>
+            <if test="nickName != null">
+                nick_name=#{nickName},
+            </if>
+        </set>
+        gmt_modified=now()
+        where id=#{id}
+    </update>
+
+    <delete id="delete">
+        delete from user where id=#{id}
+    </delete>
+
+    <select id="findAll" resultMap="userResultMap">
+        select * from user
+    </select>
+
+    <select id="findByUserName" resultMap="userResultMap">
+        select * from user where user_name=#{userName} limit 1
+    </select>
+
+    <select id="query" resultMap="userResultMap">
+        select * from user where user_name like CONCAT('%',#{keyWord},'%')
+        or nick_name like CONCAT('%',#{keyWord},'%')
+    </select>
+
+    <select id="search" resultMap="userResultMap">
+        select * from user
+        <where>
+            <if test="keyWord != null">
+                user_name like CONCAT('%',#{keyWord},'%')
+                or nick_name like CONCAT('%',#{keyWord},'%')
+            </if>
+            <if test="startTime != null">
+                and gmt_created <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null">
+                and gmt_created <![CDATA[ <= ]]> #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByIds" resultMap="userResultMap">
+        select * from user
+        <where>
+            id in
+            <foreach item="item" index="index" collection="ids"
+                     open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

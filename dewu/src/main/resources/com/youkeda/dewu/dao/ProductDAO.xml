@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youkeda.dewu.dao.ProductDAO">
+    <resultMap id="BaseResultMap" type="com.youkeda.dewu.dataobject.ProductDO">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="price" jdbcType="DOUBLE" property="price"/>
+        <result column="purchase_num" jdbcType="INTEGER" property="purchaseNum"/>
+        <result column="product_intro" jdbcType="VARCHAR" property="productIntro"/>
+        <result column="product_imgs" jdbcType="VARCHAR" property="productImgs"/>
+        <result column="gmt_created" jdbcType="TIMESTAMP" property="gmtCreated"/>
+        <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from product
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+
+    <insert id="insert" parameterType="com.youkeda.dewu.dataobject.ProductDO">
+    insert into product (id, name, price, 
+      purchase_num, product_intro,product_imgs, gmt_created,
+      gmt_modified)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE}, 
+      #{purchaseNum,jdbcType=INTEGER}, #{productIntro,jdbcType=VARCHAR},#{productImgs,jdbcType=VARCHAR}, now(),now())
+  </insert>
+
+    <update id="updateByPrimaryKey" parameterType="com.youkeda.dewu.dataobject.ProductDO">
+        update product
+        set
+        <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(name)">
+            name = #{name},
+        </if>
+
+        <if test="price != null">
+            price = #{price},
+        </if>
+
+        <if test="purchaseNum != null">
+            purchase_num = #{purchaseNum},
+        </if>
+
+        <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(productIntro)">
+            product_intro = #{productIntro},
+        </if>
+
+        <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(productImgs)">
+            product_imgs = #{productImgs},
+        </if>
+        gmt_modified = now()
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, name, price, purchase_num, product_intro,product_imgs,
+    gmt_created, gmt_modified
+    from product
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, name, price, purchase_num, product_intro,product_imgs,
+    gmt_created, gmt_modified
+    from product
+  </select>
+
+    <select id="selectAllCounts" resultType="int">
+    select count(1)
+    from product
+  </select>
+
+    <select id="pageQuery" resultMap="BaseResultMap">
+        select id, name, price, purchase_num, product_intro,product_imgs,
+        gmt_created, gmt_modified
+        from product
+        <bind name="currentIndex" value="pagination * pageSize"/>
+        limit #{currentIndex},#{pageSize}
+    </select>
+
+</mapper>

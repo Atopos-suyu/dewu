@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youkeda.dewu.dao.PaymentRecordDAO">
+    <resultMap id="BaseResultMap" type="com.youkeda.dewu.dataobject.PaymentRecordDO">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="order_number" jdbcType="VARCHAR" property="orderNumber"/>
+        <result column="channel_payment_id" jdbcType="VARCHAR" property="channelPaymentId"/>
+        <result column="channel_type" jdbcType="VARCHAR" property="channelType"/>
+        <result column="amount" jdbcType="DOUBLE" property="amount"/>
+        <result column="pay_type" jdbcType="VARCHAR" property="payType"/>
+        <result column="pay_status" jdbcType="VARCHAR" property="payStatus"/>
+        <result column="extend_str" jdbcType="VARCHAR" property="extendStr"/>
+        <result column="pay_end_time" jdbcType="VARCHAR" property="payEndTime"/>
+        <result column="gmt_created" jdbcType="TIMESTAMP" property="gmtCreated"/>
+        <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified"/>
+    </resultMap>
+    <insert id="insert" parameterType="com.youkeda.dewu.dataobject.PaymentRecordDO">
+    insert into ykd_payment_record (id, user_id, order_number, 
+      channel_payment_id, channel_type, amount, 
+      pay_type, pay_status, extend_str, 
+      pay_end_time, gmt_created, gmt_modified
+      )
+    values (#{id,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{orderNumber,jdbcType=VARCHAR}, 
+      #{channelPaymentId,jdbcType=VARCHAR}, #{channelType,jdbcType=VARCHAR}, #{amount,jdbcType=DOUBLE}, 
+      #{payType,jdbcType=VARCHAR}, #{payStatus,jdbcType=VARCHAR}, #{extendStr,jdbcType=VARCHAR}, 
+      #{payEndTime,jdbcType=VARCHAR}, now(), now()
+      )
+  </insert>
+    <update id="update" parameterType="com.youkeda.dewu.dataobject.PaymentRecordDO">
+        update ykd_payment_record
+        <set>
+            <if test="userId !='' and userId!=null">
+                user_id = #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNumber !='' and orderNumber!=null">
+                order_number = #{orderNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="channelPaymentId !='' and channelPaymentId!=null">
+                channel_payment_id = #{channelPaymentId,jdbcType=VARCHAR},
+            </if>
+            <if test="channelType !='' and channelType!=null">
+                channel_type = #{channelType,jdbcType=VARCHAR},
+            </if>
+            <if test="amount!=null">
+                amount = #{amount,jdbcType=DOUBLE},
+            </if>
+            <if test="payType !='' and payType!=null">
+                pay_type = #{payType,jdbcType=VARCHAR},
+            </if>
+            <if test="payStatus !='' and payStatus!=null">
+                pay_status = #{payStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="extendStr !='' and extendStr!=null">
+                extend_str = #{extendStr,jdbcType=VARCHAR},
+            </if>
+            <if test="payEndTime !='' and payEndTime!=null">
+                pay_end_time = #{payEndTime,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreated!=null">
+                gmt_created = #{gmtCreated,jdbcType=TIMESTAMP},
+            </if>
+            gmt_modified = now()
+        </set>
+        <where>
+            <if test="id !='' and id!=null">
+                id = #{id,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+
+    <select id="select" parameterType="com.youkeda.dewu.param.PaymentRecordQueryParam"
+            resultMap="BaseResultMap">
+        select id, user_id, order_number, channel_payment_id, channel_type, amount, pay_type,
+        pay_status, extend_str, pay_end_time, gmt_created, gmt_modified
+        from ykd_payment_record
+        <where>
+            <if test="userId !='' and userId!=null">
+                and user_id = #{userId,jdbcType=VARCHAR}
+            </if>
+            <if test="orderNumber !='' and orderNumber!=null">
+                and order_number = #{orderNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="payType !=null">
+                and pay_type = #{payType}
+            </if>
+            <if test="paymentStatus !=null">
+                and pay_status = #{paymentStatus}
+            </if>
+        </where>
+    </select>
+</mapper>
